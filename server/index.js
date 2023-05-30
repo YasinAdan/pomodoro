@@ -6,6 +6,9 @@ import morgan from "morgan";
 // db
 import { connectDB } from "./config/database.js";
 
+// routes
+import userRoutes from "./routes/routes.user.js";
+
 const app = express();
 
 /* Setting up the server. */
@@ -41,6 +44,9 @@ app.use(morgan("dev"));
 app.get("/", (req, res) => {
   res.send("Hello, this is the backend.");
 });
+
+// routes
+app.use("/api/user", userRoutes);
 
 
 // listening to server

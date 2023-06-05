@@ -89,7 +89,7 @@ export default function Timer() {
   };
 
   const theme = {
-    color: currentSession % 2 === 0 ? "#C60C30" : "#004687",
+    color: currentSession % 2 === 0 ? "#e35e79" : "#307dc5",
   };
 
   const handleSessionSave = async () => {
@@ -165,7 +165,7 @@ const Container = styled.div`
   // circular container that is centered
   width: 65vh;
   height: 65vh;
-  border-radius: 50%;
+  border-radius: 2rem;
   z-index: 10;
   // border color
   border: 8px solid ${(props) => props.theme.color};
@@ -196,6 +196,7 @@ const Container = styled.div`
     left: 50%;
     transform: translate(-50%, -50%);
     color: ${(props) => props.theme.color};
+    font-weight: bold;
     font-size: 1.1rem;
   }
 

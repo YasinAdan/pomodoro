@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
+import Error from '../pages/error';
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
@@ -19,6 +20,10 @@ const TodoList = () => {
     const newTodos = [...todos];
     newTodos.splice(index, 1);
     setTodos(newTodos);
+
+    // also remove it from local storage
+    localStorage.setItem('todos', JSON.stringify(newTodos));
+
   };
 
   const doneTodo = (index) => {
@@ -52,6 +57,14 @@ const TodoList = () => {
         <h1>to-do</h1>
         <span>keep it simple, 3 tasks max</span>
       </div>
+      {!todos.length && (
+        <EM>
+          <Error 
+      data="add a task to get started"
+      className="message"
+      />
+        </EM>
+      )}
       <div className="todos">
         {todos.map((todo, index) => (
           <div className="todo" key={index}>
@@ -85,6 +98,8 @@ const TodoList = () => {
 
 
 const Container = styled.div`
+
+  position: relative;
 
     width: 15vw;
     height: 40vh;
@@ -205,6 +220,9 @@ const Container = styled.div`
 
             &:focus {
                 outline: none;
+                scale: 1.1;
+                // give it a box shadow
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
             }
         }
 
@@ -232,6 +250,14 @@ const Container = styled.div`
     }
 
 
+
+`;
+
+const EM = styled.div`
+position: absolute;
+width: 100%;
+
+font-size: 0.5rem;
 
 `;
 

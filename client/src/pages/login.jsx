@@ -29,6 +29,7 @@ export default function Login() {
       const {data} = await axios.post("http://localhost:8000/api/user/login", {email, password});
       const {data:token, message, user: {id, email: userEmail}} = data;
       localStorage.setItem("token", token);
+      localStorage.setItem("id", id);
       dispatch(userData({id, userEmail}));
       dispatch(setAuth(true));
       

@@ -12,10 +12,12 @@ export default function Timer() {
 
   const email = useSelector((state) => state.user.email);
 
+  const id = localStorage.getItem("id");
+
   const uri = "http://localhost:8000/api/user/save";
 
-  const [sessionLength, setSessionLength] = useState(25); // in minutes
-  const [breakLength, setBreakLength] = useState(5); // in minutes
+  const [sessionLength, setSessionLength] = useState(0.05); // in minutes
+  const [breakLength, setBreakLength] = useState(0.05); // in minutes
   const [currentSession, setCurrentSession] = useState(0); // 0-indexed
   const [timeRemaining, setTimeRemaining] = useState(sessionLength * 60); // in seconds
   const [timerRunning, setTimerRunning] = useState(false);
@@ -95,7 +97,7 @@ export default function Timer() {
   const handleSessionSave = async () => {
     try {
       const updatedSessionCount = {
-        email,
+        id,
         date: [today, todaysDate],
         sessions: isOnBreak ? sessionCount.sessions : sessionCount.sessions + 1,
         breaks: isOnBreak ? sessionCount.breaks + 1 : sessionCount.breaks,

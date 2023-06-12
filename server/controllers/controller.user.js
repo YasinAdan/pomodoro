@@ -62,7 +62,7 @@ export const saveUserSession = async (req, res) => {
 
    // handle saving user session to database here
 
-   const user = await User.findOne({ email: req.body.email });
+   const user = await User.findOne({ _id: req.body.id });
 
     if(!user) return res.status(404).send({message: "Something's wrong with user validation."});
 
@@ -79,3 +79,23 @@ export const saveUserSession = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 }
+
+// get user sessions from database
+
+export const getUserSessions = async (req, res) => {
+  try {
+    // handle getting user sessions from the database here, searching by the ID provided in the headers
+    const user = await User.findOne({ _id: req.headers.id });
+
+    if (!user) {
+      return res.status(404).send({ message: "Something's wrong with user validation." });
+    }
+
+    // get sessions from the database
+    const sessions = user.pmSessions;
+
+    res.status(200).send({ sessions: sessions, message: "Sessions retrieved successfully." });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};

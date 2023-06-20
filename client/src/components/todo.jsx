@@ -135,7 +135,7 @@ const Container = styled.div`
             text-decoration: line-through;
         }
         .todo {
-            width: 90%;
+            width: 100%;
             background: #f5f5f5;
             display: flex;
             justify-content: space-around;

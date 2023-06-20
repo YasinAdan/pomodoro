@@ -4,6 +4,7 @@ import styled from "styled-components";
 import axios from "axios";
 
 import { userData } from "../reducers/user";
+import MusicPlayer from "./player";
 
 export default function Timer() {
   // dates
@@ -27,7 +28,11 @@ export default function Timer() {
     sessions: 1,
     breaks: 0,
   });
+  const [note, setNote] = useState("");
   const [isOnBreak, setIsOnBreak] = useState(false);
+  const [confirmSave, setConfirmSave] = useState(false);
+
+  const [clickCounter, setClickCounter] = useState(1);
 
   useEffect(() => {
     let timer = null;
@@ -95,16 +100,43 @@ export default function Timer() {
   };
 
   const handleSessionSave = async () => {
-    try {
-      const updatedSessionCount = {
-        id,
-        date: [today, todaysDate],
-        sessions: isOnBreak ? sessionCount.sessions : sessionCount.sessions + 1,
-        breaks: isOnBreak ? sessionCount.breaks + 1 : sessionCount.breaks,
-      };
+    // modify the try section, when user clicks on button, it should activate the add a note section, on the
+    // second click, it should save the note and the session count to the database
 
-      const response = await axios.post(uri, updatedSessionCount);
-      console.log(response);
+    try {
+      if (clickCounter === 1) {
+        setConfirmSave(true);
+        setClickCounter(2);
+        return;
+      } else if (clickCounter === 2) {
+        const updatedSessionCount = {
+          id,
+          date: [today, todaysDate],
+          sessions: isOnBreak
+            ? sessionCount.sessions
+            : sessionCount.sessions + 1,
+          breaks: isOnBreak ? sessionCount.breaks + 1 : sessionCount.breaks,
+          note,
+        };
+
+        const response = await axios.post(uri, updatedSessionCount);
+        console.log(response);
+
+        // reset session count
+        setSessionCount({
+          email,
+          date: [today, todaysDate],
+          sessions: 1,
+          breaks: 0,
+        });
+        setNote("");
+        setConfirmSave(false);
+        // reset timer
+        resetTimer();
+        setClickCounter(1);
+      } else {
+        return;
+      }
     } catch (error) {
       console.log(error);
     }
@@ -112,6 +144,7 @@ export default function Timer() {
 
   return (
     <>
+    <Main>
       <Container theme={theme}>
         <div>
           <h2 className="header">
@@ -153,15 +186,53 @@ export default function Timer() {
           <p className="sessions">Sessions: {sessionCount.sessions}/4</p>
         </div>
       </Container>
+      {confirmSave && (
+        <CSave>
+          <button
+            className="cancel-btn"
+            onClick={() => {
+              setConfirmSave(false);
+              setSessionCount({
+                email,
+                date: [today, todaysDate],
+                sessions: 1,
+                breaks: 0,
+                note: "",
+              });
+            }}
+            >
+            ✕
+          </button>
+          <div className="save-container">
+            <h2>Add a note?</h2>
+            <div className="data">
+              sessions: {sessionCount.sessions}, breaks: {sessionCount.breaks}
+            </div>
+            <textarea
+              value={note}
+              onChange={(e) => {
+                setNote(e.target.value);
+              }}
+              maxLength={40}
+              ></textarea>
+          </div>
+        </CSave>
+      )}
       <SaveButton
         disabled={sessionCount.breaks >= 1 ? false : true}
         onClick={handleSessionSave}
         >
         Save Session
       </SaveButton>
-    </>
+    <MusicPlayer />
+    </Main>
+        </>
   );
 }
+
+const Main = styled.div`
+  position: relative;
+`;
 
 const Container = styled.div`
   // circular container that is centered
@@ -221,7 +292,7 @@ const Container = styled.div`
 `;
 
 const SaveButton = styled.button`
-  position: absolute;
+  position: fixed;
   bottom: 0;
   right: 0;
   transform: translate(-50%, -50%);
@@ -234,5 +305,77 @@ const SaveButton = styled.button`
   &:hover {
     cursor: pointer;
     transform: translate(-50%, -50%) translateY(-5px);
+  }
+`;
+
+const CSave = styled.div`
+  position: fixed;
+  background-color: rgb(114, 191, 203);
+  width: 15vw;
+  height: 20vh;
+  border-radius: 2rem;
+  color: black;
+
+  // bottom right
+  left: 70%;
+  top: 79%;
+
+  .cancel-btn {
+    position: absolute;
+    top: 1%;
+    right: 5%;
+
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    cursor: pointer;
+
+    &:hover {
+      scale: 1.2;
+
+      // rotate or spin the x button
+      animation: spin 1s linear infinite;
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    }
+  }
+
+  .save-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+
+    .data {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+
+    textarea {
+      width: 80%;
+      height: 50%;
+      border-radius: 0.5rem;
+      outline: none;
+      border: none;
+      resize: none;
+      padding: 0.5rem;
+
+      &:focus {
+        border: 2px solid #307dc5;
+      }
+    }
   }
 `;

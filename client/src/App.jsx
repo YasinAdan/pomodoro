@@ -35,7 +35,6 @@ const RenderZone = () => {
       <div className="error-zone">
         <Error data="You are not logged in. Please log in to access this page." />
         <Link to="/login" className="rdl-link">login</Link>
-
       </div>
     )
   }

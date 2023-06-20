@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import Card from "../components/card";
+import Loading from "../components/loading";
 
 export default function Sessions() {
   const [sessions, setSessions] = useState();
@@ -14,7 +15,14 @@ export default function Sessions() {
         const { data } = await axios.get("http://localhost:8000/api/user/get", {
           headers: { id: localStorage.getItem("id") },
         });
-        setSessions(data);
+
+        // slice the sessions array to only include the last 30 days
+        const sessions = data.sessions.slice(0, 30);
+        // sort the sessions array by date
+        sessions.sort((a, b) => {
+          return new Date(b.date) - new Date(a.date);
+        });
+        setSessions({ sessions });
       } catch (error) {
         console.log(error);
       }
@@ -23,19 +31,25 @@ export default function Sessions() {
   }, []);
 
   return (
-    <Container>
-      <h1>past-sessions</h1>
-      <span className="sub-text">progress from past 30 days</span>
+    <>
+      {sessions ? (
+        <Container>
+          <h1>past-sessions</h1>
+          <span className="sub-text">progress from past 30 days</span>
 
-      {sessions &&
-        sessions.sessions.map((session, i) => {
-          return (
-            <div className="card">
-              <Card session={session} key={i} />
-            </div>
-          );
-        })}
-    </Container>
+          {sessions &&
+            sessions.sessions.map((session, i) => {
+              return (
+                <div className="card" key={i}>
+                  <Card session={session} />
+                </div>
+              );
+            })}
+        </Container>
+      ) : (
+        <Loading />
+      )}
+    </>
   );
 }
 
@@ -65,19 +79,17 @@ const Container = styled.div`
       -30px 30px 0px #63abab;
   }
 
-
-
   display: flex;
   justify-content: flex-start;
   align-items: center;
   // align content center
-gap: 2rem;  
+  gap: 2rem;
   flex-wrap: wrap;
   margin-left: 3rem;
 
   .card {
     flex: 0 0 calc(20% - 2rem); /* 20% width for each card with 2rem margin */
-  margin-top: 1.5rem;
+    margin-top: 1.5rem;
     margin-top: 2rem;
   }
 `;

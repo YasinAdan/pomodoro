@@ -9,38 +9,52 @@ import Navbar from "./components/navbar";
 import Home from "./pages/home";
 
 import "./App.scss";
-import Signup from './pages/signup';
-import Login from './pages/login';
-import Zone from './pages/zone';
-import Error from './pages/error';
+import Signup from "./pages/signup";
+import Login from "./pages/login";
+import Zone from "./pages/zone";
+import Error from "./pages/error";
 
-import { setAuth, userData } from './reducers/user';
-import { useSelector } from 'react-redux';
+import { setAuth, userData } from "./reducers/user";
+import { useSelector } from "react-redux";
 import Sessions from "./pages/sessions";
 import About from "./pages/about";
-
-
-
 
 // render zone page only if user is logged in
 
 const RenderZone = () => {
-  const auth = useSelector(state => state.user.auth);
+  const auth = useSelector((state) => state.user.auth);
 
   if (auth) {
-    return <Zone />
+    return <Zone />;
   } else {
     // redirect to login page
     return (
       <div className="error-zone">
         <Error data="You are not logged in. Please log in to access this page." />
-        <Link to="/login" className="rdl-link">login</Link>
+        <Link to="/login" className="rdl-link">
+          login
+        </Link>
       </div>
-    )
+    );
   }
+};
+const RenderSessions = () => {
+  const auth = useSelector((state) => state.user.auth);
 
-}
-
+  if (auth) {
+    return <Sessions />;
+  } else {
+    // redirect to login page
+    return (
+      <div className="error-zone">
+        <Error data="You are not logged in. Please log in to access this page." />
+        <Link to="/login" className="rdl-link">
+          login
+        </Link>
+      </div>
+    );
+  }
+};
 
 const Layout = () => {
   return (
@@ -49,7 +63,7 @@ const Layout = () => {
       <Outlet />
     </>
   );
-}
+};
 
 const router = createBrowserRouter([
   {
@@ -76,7 +90,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/sessions",
-        element: <Sessions />,
+        element: <RenderSessions />,
       },
       {
         path: "/about",
@@ -84,18 +98,18 @@ const router = createBrowserRouter([
       },
       {
         path: "/error",
-        element: <Error data="hello, testing message"/>,
+        element: <Error data="hello, testing message" />,
       },
-    ]
+    ],
   },
 ]);
 
 function App() {
   return (
     <div className="App">
-     <RouterProvider router={router} />
+      <RouterProvider router={router} />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -5,31 +5,52 @@ import styled from "styled-components";
 function MusicPlayer() {
   const playlist = lofiPlaylist();
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
-  const currentSong = playlist[currentSongIndex];
+  const [shuffledPlaylist, setShuffledPlaylist] = useState([]);
+
+  useEffect(() => {
+    // Shuffle the playlist on component mount or page reload
+    const shuffled = playlist.sort(() => Math.random() - 0.5);
+    setShuffledPlaylist(shuffled);
+    setCurrentSongIndex(0);
+  }, []);
+
+/* This is a useEffect hook that adds an event listener to the audio player element when the
+shuffledPlaylist or currentSongIndex state variables change. The event listener listens for the
+"ended" event, which is triggered when the audio finishes playing. When the event is triggered, it
+calls the handleNext function to play the next song in the shuffled playlist. The useEffect hook
+also returns a cleanup function that removes the event listener when the component unmounts or when
+the shuffledPlaylist or currentSongIndex state variables change. */
+  useEffect(() => {
+    if (shuffledPlaylist.length > 0) {
+      const audioPlayer = document.getElementById("audio-player");
+      audioPlayer.addEventListener("ended", handleNext);
+      return () => {
+        audioPlayer.removeEventListener("ended", handleNext);
+      };
+    }
+  }, [shuffledPlaylist, currentSongIndex]);
 
   const handlePrevious = () => {
     if (currentSongIndex === 0) {
-      setCurrentSongIndex(playlist.length - 1);
+      setCurrentSongIndex(shuffledPlaylist.length - 1);
     } else {
       setCurrentSongIndex(currentSongIndex - 1);
     }
   };
 
   const handleNext = () => {
-    if (currentSongIndex === playlist.length - 1) {
+    if (currentSongIndex === shuffledPlaylist.length - 1) {
       setCurrentSongIndex(0);
     } else {
       setCurrentSongIndex(currentSongIndex + 1);
     }
   };
 
-  useEffect(() => {
-    const audioPlayer = document.getElementById("audio-player");
-    audioPlayer.addEventListener("ended", handleNext);
-    return () => {
-      audioPlayer.removeEventListener("ended", handleNext);
-    };
-  }, [currentSongIndex]);
+  if (shuffledPlaylist.length === 0) {
+    return <div>No songs available.</div>;
+  }
+
+  const currentSong = shuffledPlaylist[currentSongIndex];
 
   return (
     <Player>

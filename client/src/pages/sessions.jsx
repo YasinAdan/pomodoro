@@ -32,6 +32,10 @@ export default function Sessions() {
 
   return (
     <>
+    {
+      
+    }
+    <>
       {sessions ? (
         <Container>
           <h1>past-sessions</h1>
@@ -50,6 +54,7 @@ export default function Sessions() {
         <Loading />
       )}
     </>
+   </>
   );
 }
 

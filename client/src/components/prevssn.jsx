@@ -1,10 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 import Loading from "./loading";
+import { motion } from "framer-motion";
+import { pastSessionsAnim } from "../animations";
 
 export default function Prevssn({ sessions }) {
   return (
-    <Container>
+    <Container  variants={pastSessionsAnim} initial='hidden' animate='show' exit='exit'>
       <h1>past-sessions</h1>
       {sessions ? (
         sessions.map((session, i) => {
@@ -27,7 +29,7 @@ export default function Prevssn({ sessions }) {
   );
 }
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   position: relative;
   left: -5rem;
 

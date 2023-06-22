@@ -1,17 +1,17 @@
-import React, {useState} from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import {useNavigate, Link} from 'react-router-dom';
+import React, { useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
+import { motion } from "framer-motion";
+import { loginAnimation } from "../animations";
 
-import Loading from "../components/loading"
+import Loading from "../components/loading";
 
-import {userData, setAuth} from "../reducers/user"
-
+import { userData, setAuth } from "../reducers/user";
 
 export default function Login() {
-
   const navigate = useNavigate();
 
   const [message, setMessage] = useState(""); // ["success", "message"
@@ -23,80 +23,107 @@ export default function Login() {
   const handleSubmit = async (values) => {
     setLoading(true);
 
-    const {email, password} = values;
+    const { email, password } = values;
 
     try {
-      const {data} = await axios.post("http://localhost:8000/api/user/login", {email, password});
-      const {data:token, message, user: {id, email: userEmail}} = data;
+      const { data } = await axios.post(
+        "http://localhost:8000/api/user/login",
+        { email, password }
+      );
+      const {
+        data: token,
+        message,
+        user: { id, email: userEmail },
+      } = data;
       localStorage.setItem("token", token);
       localStorage.setItem("id", id);
-      dispatch(userData({id, userEmail}));
+      dispatch(userData({ id, userEmail }));
       dispatch(setAuth(true));
-      
+
       setTimeout(() => {
         setLoading(false);
         navigate("/zone");
       }, 300);
-
-
     } catch (error) {
       setLoading(false);
-      setMessage("Error logging in. Please try again.")
-    }  
-  }
-
-
+      setMessage("Error logging in. Please try again.");
+    }
+  };
 
   return (
-        <>
-    {
-        loading ? <Loading /> : (
-            
-            <Container>
-      <h1>Login</h1>
-     <Formik
-       initialValues={{ email: '', password: ''}}
-       onSubmit={(values) => handleSubmit(values)}
-       >
-         <Form className='form'>
-           <Field type="email" name="email" placeholder="email..." className="input"/>
-           <ErrorMessage name="email" component="div" />
-           <Field type="password" name="password" placeholder="password" className="input" autoComplete="true"/>
-           <ErrorMessage name="password" component="div" />
-           <button type="submit" >
-             Submit
-           </button>
-           <Link to="/login">Don't have an account? create one here.</Link>
-         </Form>
-     </Formik>
-      {message && <div className='message'>{message}</div>}
-   </Container>
-)}
-</>
-)
+    <>
+      {loading ? (
+        <Loading />
+      ) : (
+        <Container
+          variants={loginAnimation}
+          initial="hidden"
+          animate="show"
+          exit="exit"
+        >
+          <h1>Login</h1>
+          <Formik
+            initialValues={{ email: "", password: "" }}
+            onSubmit={(values) => handleSubmit(values)}
+          >
+            <Form className="form">
+              <Field
+                type="email"
+                name="email"
+                placeholder="email..."
+                className="input"
+              />
+              <ErrorMessage
+                name="email"
+                component="div"
+                className="error-message"
+              />
+              <Field
+                type="password"
+                name="password"
+                placeholder="password"
+                className="input"
+                autoComplete="true"
+              />
+              <ErrorMessage
+                name="password"
+                component="div"
+                className="error-message"
+              />
+              <button type="submit">Submit</button>
+              <Link to="/signup">Don't have an account? create one here.</Link>
+            </Form>
+          </Formik>
+          {message && <div className="message">{message}</div>}
+        </Container>
+      )}
+    </>
+  );
 }
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   height: 70vh;
   width: 70vw;
   margin: 6.5rem auto;
   position: relative;
   // gradient
-  background: linear-gradient(90deg, rgba(57, 106, 252, 0.7) 0%, rgba(41,72,255,0.85) 50%);
+  background: linear-gradient(
+    90deg,
+    rgba(57, 106, 252, 0.7) 0%,
+    rgba(41, 72, 255, 0.85) 50%
+  );
   border-radius: 10px;
-  
+
   h1 {
-      position: absolute;
-      top: -8%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: black;
-      font-size: 2rem;
-      // italic font style
-      font-style: italic;
-
+    position: absolute;
+    top: -8%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: black;
+    font-size: 2rem;
+    // italic font style
+    font-style: italic;
   }
-
 
   .message {
     position: absolute;
@@ -104,8 +131,6 @@ const Container = styled.div`
     color: black;
     font-size: 1.2rem;
   }
-  
-  
 
   .form {
     position: relative;
@@ -150,6 +175,10 @@ const Container = styled.div`
       position: absolute;
       bottom: 2%;
       left: 80%;
+      color: white;
+    }
+
+    .error-message {
       color: white;
     }
   }

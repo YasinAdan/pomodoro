@@ -6,7 +6,7 @@ import { setAuth, userData } from "../reducers/user";
 
 function menuOptions(auth, handleLogout) {
   return (
-    <div className="menu-options">
+    <>
       <Link to="/" className="link">
         Home
       </Link>
@@ -33,11 +33,11 @@ function menuOptions(auth, handleLogout) {
           Logout
         </button>
       )}
-    </div>
+    </>
   );
 }
 
-export default function navbar() {
+export default function Navbar() {
   const [menu, setMenu] = useState(false);
   const auth = useSelector((state) => state.user.auth);
   const user = useSelector((state) => state.user.user);
@@ -46,9 +46,12 @@ export default function navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("id");
+    localStorage.removeItem("todos");
     dispatch(setAuth(false));
     dispatch(userData({ id: null, userEmail: null }));
   };
+
   return (
     <Container>
       <div className="logo">
@@ -72,10 +75,14 @@ export default function navbar() {
           About
         </Link>
       </div>
-      <button className="menu-btn" onClick={() => setMenu(!menu)}>
-        Menu
-      </button>
-      {menu && menuOptions(auth, handleLogout)}
+      <div className="menu-container">
+        <button className="menu-btn" onClick={() => setMenu(!menu)}>
+          Menu
+        </button>
+        <div className={`menu-options ${menu ? "open" : "hide"}`}>
+          {menuOptions(auth, handleLogout)}
+        </div>
+      </div>
     </Container>
   );
 }
@@ -114,6 +121,10 @@ const Container = styled.nav`
     }
   }
 
+  .menu-container {
+    position: relative;
+  }
+
   .menu-btn {
     background-color: #2e41f3;
     color: #fff;
@@ -128,15 +139,24 @@ const Container = styled.nav`
     border-radius: 5px;
     z-index: 1;
     width: 15vh;
-    height: 17vh;
-    padding: 0.5rem;
+    height: 0;
     position: absolute;
-    top: 9vh;
-    right: 10vh;
+    top: 100%;
+    left: -3.5rem;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
+    overflow: hidden;
+    transition: height 0.3s ease;
+    margin-top: 1.9rem;
+
+    &.open {
+      height: 17vh;
+    }
+
+    &.hide {
+    }
 
     .link {
       text-decoration: none;

@@ -1,37 +1,36 @@
-import React, {useState} from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import {useNavigate, Link} from 'react-router-dom';
+import React, { useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { signupAnimation } from "../animations";
 import styled from "styled-components";
 
-const validate = values => {
+const validate = (values) => {
   const errors = {};
   if (!values.email) {
-    errors.email = 'Required';
-  } else if (
-    !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-  ) {
-    errors.email = 'Invalid email address';
+    errors.email = "Required";
+  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+    errors.email = "Invalid email address";
   }
 
   if (!values.password) {
-    errors.password = 'Required';
+    errors.password = "Required";
   } else if (values.password.length < 8) {
-    errors.password = 'Password must be at least 8 characters';
+    errors.password = "Password must be at least 8 characters";
   }
 
   if (!values.confirmPassword) {
-    errors.confirmPassword = 'Required';
+    errors.confirmPassword = "Required";
   } else if (values.confirmPassword !== values.password) {
-    errors.confirmPassword = 'Passwords must match';
+    errors.confirmPassword = "Passwords must match";
   }
 
   return errors;
-}
+};
 
 export default function Signup() {
-
   const navigate = useNavigate();
 
   const [message, setMessage] = useState(""); // ["success", "message"
@@ -43,71 +42,100 @@ export default function Signup() {
   const handleSubmit = async (values) => {
     setLoading(true);
 
-    const {email, password} = values;
+    const { email, password } = values;
 
     try {
-      const {data} = await axios.post("http://localhost:8000/api/user/signup", {email, password});
+      const { data } = await axios.post(
+        "http://localhost:8000/api/user/signup",
+        { email, password }
+      );
 
       // if response is good, dispatch user to redux store
 
       setLoading(false);
 
-      if(data.status >= 200 && data.status < 300) {
+      if (data.status >= 200 && data.status < 300) {
         setMessage("Success! Redirecting to login page...");
       }
-
 
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-
-
-
-
-
-
     } catch (error) {
       setLoading(false);
-      setMessage("Error signing up. Please try again.")
-    }  
-  }
-
-
+      setMessage("Error signing up. Please try again.");
+    }
+  };
 
   return (
-    <Container>
+    <Container
+      variants={signupAnimation}
+      initial="hidden"
+      animate="show"
+      exit="exit"
+    >
       <h1>Sign Up</h1>
-     <Formik
-       initialValues={{ email: '', password: '', confirmPassword: '' }}
-       validate={values => validate(values)}
-       onSubmit={(values) => handleSubmit(values)}
-     >
-         <Form className='form'>
-           <Field type="email" name="email" placeholder="email..." className="input"/>
-           <ErrorMessage name="email" component="div" />
-           <Field type="password" name="password" placeholder="password" className="input" autoComplete="true"/>
-           <ErrorMessage name="password" component="div" />
-           <Field type="password" name="confirmPassword" placeholder="confirm password" className="input" autoComplete="true"/>
-           <ErrorMessage name="confirmPassword" component="div" />
-           <button type="submit" >
-            
-             Submit
-           </button>
-           <Link to="/login">Already have an account? Login here.</Link>
-         </Form>
-     </Formik>
-      {message && <div className='message'>{message}</div>}
-   </Container>
-  )
+      <Formik
+        initialValues={{ email: "", password: "", confirmPassword: "" }}
+        validate={(values) => validate(values)}
+        onSubmit={(values) => handleSubmit(values)}
+      >
+        <Form className="form">
+          <Field
+            type="email"
+            name="email"
+            placeholder="email..."
+            className="input"
+          />
+          <ErrorMessage
+            name="email"
+            component="div"
+            className="error-message"
+          />
+          <Field
+            type="password"
+            name="password"
+            placeholder="password"
+            className="input"
+            autoComplete="true"
+          />
+          <ErrorMessage
+            name="password"
+            component="div"
+            className="error-message"
+          />
+          <Field
+            type="password"
+            name="confirmPassword"
+            placeholder="confirm password"
+            className="input"
+            autoComplete="true"
+          />
+          <ErrorMessage
+            name="confirmPassword"
+            component="div"
+            className="error-message"
+          />
+          <button type="submit">Submit</button>
+          <Link to="/login">Already have an account? Login here.</Link>
+        </Form>
+      </Formik>
+      {message && <div className="message">{message}</div>}
+    </Container>
+  );
 }
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   height: 70vh;
   width: 70vw;
   margin: 6.5rem auto;
   position: relative;
   // gradient
-  background: linear-gradient(90deg, rgba(57, 106, 252, 0.7) 0%, rgba(41,72,255,0.85) 50%);
+  background: linear-gradient(
+    90deg,
+    rgba(57, 106, 252, 0.7) 0%,
+    rgba(41, 72, 255, 0.85) 50%
+  );
   border-radius: 10px;
 
   h1 {
@@ -119,18 +147,14 @@ const Container = styled.div`
     font-size: 2rem;
     // italic font style
     font-style: italic;
-
   }
-
 
   .message {
     position: absolute;
     left: 50%;
-    color: black;
+    color: #ffffff;
     font-size: 1.2rem;
   }
-  
-  
 
   .form {
     position: relative;
@@ -175,6 +199,10 @@ const Container = styled.div`
       position: absolute;
       bottom: 2%;
       left: 80%;
+      color: white;
+    }
+
+    .error-message {
       color: white;
     }
   }

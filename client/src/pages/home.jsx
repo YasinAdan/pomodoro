@@ -2,19 +2,18 @@ import React from "react";
 import StarsCanvas from "../components/Stars";
 import styled from "styled-components";
 import EarthCanvas from "../components/canvas/Earth";
-import { titleAnim, fade, photoAnim, pageAnimation } from "../animations";
+import { titleAnim, fade, pageAnimation, todoAnim } from "../animations";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 export default function Home() {
   return (
-    <motion.div
-      variants={pageAnimation}
-      initial="hidden"
-      animate="show"
-      exit="exit"
-    >
-      <Container>
+      <Container 
+        variants={pageAnimation}
+        initial="hidden"
+        animate="show"
+        exit="exit"
+      >
         <StarsCanvas />
         <div className="body">
           <Description>
@@ -44,16 +43,21 @@ export default function Home() {
               <motion.button>Get Started</motion.button>
             </Link>
           </Description>
-          <div className="right">
+          <motion.div
+            className="right"
+            variants={todoAnim}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+          >
             <EarthCanvas />
-          </div>
+          </motion.div>
         </div>
       </Container>
-    </motion.div>
   );
 }
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   .body {
     display: flex;
     flex-direction: row;
@@ -69,7 +73,7 @@ const Container = styled.div`
   }
 `;
 
-const Description = styled.div`
+const Description = styled(motion.div)`
   flex: 1;
   padding-right: 5rem;
   h2 {

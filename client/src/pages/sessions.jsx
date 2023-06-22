@@ -3,6 +3,8 @@ import styled from "styled-components";
 import axios from "axios";
 import Card from "../components/card";
 import Loading from "../components/loading";
+import { motion } from "framer-motion";
+import { cardAnim } from "../animations";
 
 export default function Sessions() {
   const [sessions, setSessions] = useState();
@@ -32,29 +34,34 @@ export default function Sessions() {
 
   return (
     <>
-    {
-      
-    }
-    <>
-      {sessions ? (
-        <Container>
-          <h1>past-sessions</h1>
-          <span className="sub-text">progress from past 30 days</span>
+      {}
+      <>
+        {sessions ? (
+          <Container>
+            <h1>past-sessions</h1>
+            <span className="sub-text">progress from past 30 days</span>
 
-          {sessions &&
-            sessions.sessions.map((session, i) => {
-              return (
-                <div className="card" key={i}>
-                  <Card session={session} />
-                </div>
-              );
-            })}
-        </Container>
-      ) : (
-        <Loading />
-      )}
+            {sessions &&
+              sessions.sessions.map((session, i) => {
+                return (
+                  <motion.div
+                    className="card"
+                    key={i}
+                    variants={cardAnim}
+                    initial="hidden"
+                    animate="show"
+                    exit="exit"
+                  >
+                    <Card session={session} />
+                  </motion.div>
+                );
+              })}
+          </Container>
+        ) : (
+          <Loading />
+        )}
+      </>
     </>
-   </>
   );
 }
 

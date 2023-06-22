@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { playerAnim } from "../animations";
 import lofiPlaylist from "../playlist";
 import styled from "styled-components";
 
@@ -14,7 +16,7 @@ function MusicPlayer() {
     setCurrentSongIndex(0);
   }, []);
 
-/* This is a useEffect hook that adds an event listener to the audio player element when the
+  /* This is a useEffect hook that adds an event listener to the audio player element when the
 shuffledPlaylist or currentSongIndex state variables change. The event listener listens for the
 "ended" event, which is triggered when the audio finishes playing. When the event is triggered, it
 calls the handleNext function to play the next song in the shuffled playlist. The useEffect hook
@@ -53,7 +55,7 @@ the shuffledPlaylist or currentSongIndex state variables change. */
   const currentSong = shuffledPlaylist[currentSongIndex];
 
   return (
-    <Player>
+    <Player variants={playerAnim} initial="hidden" animate="show" exit="exit">
       <div className="info">
         <h2>
           {currentSong.track} - {currentSong.artist}
@@ -76,7 +78,7 @@ the shuffledPlaylist or currentSongIndex state variables change. */
   );
 }
 
-const Player = styled.div`
+const Player = styled(motion.div)`
   position: absolute;
   height: 7rem;
   display: flex;

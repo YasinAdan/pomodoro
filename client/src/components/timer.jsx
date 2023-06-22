@@ -6,6 +6,9 @@ import axios from "axios";
 import { userData } from "../reducers/user";
 import MusicPlayer from "./player";
 
+import { motion } from "framer-motion";
+import { timerAnim } from "../animations";
+
 export default function Timer() {
   // dates
   const today = new Date().toLocaleString("default", { weekday: "long" });
@@ -144,89 +147,89 @@ export default function Timer() {
 
   return (
     <>
-    <Main>
-      <Container theme={theme}>
-        <div>
-          <h2 className="header">
-            {currentSession % 2 === 0 ? "Work" : "Break"}
-          </h2>
-        </div>
-
-        <div>
-          <h2 className="time">
-            {Math.floor(timeRemaining / 60)
-              .toString()
-              .padStart(2, "0")}
-            :{(timeRemaining % 60).toString().padStart(2, "0")}
-          </h2>
-        </div>
-        <div className="buttons">
-          <button
-            onClick={() => {
-              setBreakLength(5);
-              setCurrentSession(0);
-              setTimeRemaining(5 * 60);
-              setIsOnBreak(true);
-              setTimerRunning(true);
-            }}
-            >
-            5 min. break
-          </button>
-
-          {timerRunning ? (
-            <button onClick={stopTimer} className="sr">
-              Pause Timer
-            </button>
-          ) : (
-            <button onClick={startTimer} className="sr">
-              Start Timer
-            </button>
-          )}
-          <button onClick={resetTimer}>Reset Timer</button>
-          <p className="sessions">Sessions: {sessionCount.sessions}/4</p>
-        </div>
-      </Container>
-      {confirmSave && (
-        <CSave>
-          <button
-            className="cancel-btn"
-            onClick={() => {
-              setConfirmSave(false);
-              setSessionCount({
-                email,
-                date: [today, todaysDate],
-                sessions: 1,
-                breaks: 0,
-                note: "",
-              });
-            }}
-            >
-            ✕
-          </button>
-          <div className="save-container">
-            <h2>Add a note?</h2>
-            <div className="data">
-              sessions: {sessionCount.sessions}, breaks: {sessionCount.breaks}
-            </div>
-            <textarea
-              value={note}
-              onChange={(e) => {
-                setNote(e.target.value);
-              }}
-              maxLength={40}
-              ></textarea>
+      <Main>
+        <Container theme={theme} variants={timerAnim} initial='hidden' animate='show' exit='exit'>
+          <div>
+            <h2 className="header">
+              {currentSession % 2 === 0 ? "Work" : "Break"}
+            </h2>
           </div>
-        </CSave>
-      )}
-      <SaveButton
-        disabled={sessionCount.breaks >= 1 ? false : true}
-        onClick={handleSessionSave}
+
+          <div>
+            <h2 className="time">
+              {Math.floor(timeRemaining / 60)
+                .toString()
+                .padStart(2, "0")}
+              :{(timeRemaining % 60).toString().padStart(2, "0")}
+            </h2>
+          </div>
+          <div className="buttons">
+            <button
+              onClick={() => {
+                setBreakLength(5);
+                setCurrentSession(0);
+                setTimeRemaining(5 * 60);
+                setIsOnBreak(true);
+                setTimerRunning(true);
+              }}
+            >
+              5 min. break
+            </button>
+
+            {timerRunning ? (
+              <button onClick={stopTimer} className="sr">
+                Pause Timer
+              </button>
+            ) : (
+              <button onClick={startTimer} className="sr">
+                Start Timer
+              </button>
+            )}
+            <button onClick={resetTimer}>Reset Timer</button>
+            <p className="sessions">Sessions: {sessionCount.sessions}/4</p>
+          </div>
+        </Container>
+        {confirmSave && (
+          <CSave>
+            <button
+              className="cancel-btn"
+              onClick={() => {
+                setConfirmSave(false);
+                setSessionCount({
+                  email,
+                  date: [today, todaysDate],
+                  sessions: 1,
+                  breaks: 0,
+                  note: "",
+                });
+              }}
+            >
+              ✕
+            </button>
+            <div className="save-container">
+              <h2>Add a note?</h2>
+              <div className="data">
+                sessions: {sessionCount.sessions}, breaks: {sessionCount.breaks}
+              </div>
+              <textarea
+                value={note}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                }}
+                maxLength={40}
+              ></textarea>
+            </div>
+          </CSave>
+        )}
+        <SaveButton
+          disabled={sessionCount.breaks >= 1 ? false : true}
+          onClick={handleSessionSave}
         >
-        Save Session
-      </SaveButton>
-    <MusicPlayer />
-    </Main>
-        </>
+          Save Session
+        </SaveButton>
+        <MusicPlayer />
+      </Main>
+    </>
   );
 }
 
@@ -234,7 +237,7 @@ const Main = styled.div`
   position: relative;
 `;
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   // circular container that is centered
   width: 65vh;
   height: 65vh;
